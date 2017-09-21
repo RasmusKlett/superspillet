@@ -6,10 +6,10 @@ WIDTH = 700
 HEIGHT = 600
 FPS = 60
 
-HS_FILE='assets/images/highscore.txt'
-hdir=path.dirname(__file__)
+HS_FILE = 'assets/images/highscore.txt'
+hdir = path.dirname(__file__)
 img_dir = path.join(path.dirname(__file__), 'meteors')
-bg=pygame.image.load('assets/images/galgadas.png')
+bg = pygame.image.load('assets/images/galgadas.png')
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -17,18 +17,24 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
-icon=pygame.image.load('assets/images/asteroid invasion.png')
-life=pygame.image.load('assets/images/life.png')
+icon = pygame.image.load('assets/images/asteroid invasion.png')
+life = pygame.image.load('assets/images/life.png')
 meteor_images = []
 expl_sounds = []
-meteor_list =['meteorBrown_big1.png','meteorBrown_med1.png',
-              'meteorBrown_big2.png','meteorBrown_big3.png',
-              'meteorBrown_med3.png',
-              'meteorBrown_small1.png','meteorBrown_small2.png',
-              'meteorBrown_tiny1.png','meteorBrown_tiny2.png']
+meteor_list = [
+    'meteorBrown_big1.png',
+    'meteorBrown_med1.png',
+    'meteorBrown_big2.png',
+    'meteorBrown_big3.png',
+    'meteorBrown_med3.png',
+    'meteorBrown_small1.png',
+    'meteorBrown_small2.png',
+    'meteorBrown_tiny1.png',
+    'meteorBrown_tiny2.png'
+]
 
 powerup_images = {}
-powerup_images['gun'] = pygame.image.load( 'assets/images/powerpowerup.png')
+powerup_images['gun'] = pygame.image.load('assets/images/powerpowerup.png')
 powerup_images['life'] = pygame.image.load('assets/images/life.png')
 pygame.display.set_icon(icon)
 # initialize pygame and create window
@@ -38,30 +44,34 @@ pygame.mixer.music.load('assets/sounds/bgspaceshooter.mp3')
 # pygame.mixer.music.play(-1)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("asteroid invasion")
-speed=8
-bspeed=12
-sspeed=14
-powerc=RED
-pew=pygame.mixer.Sound('assets/sounds/pew.wav')
-astrexpl=pygame.mixer.Sound('assets/sounds/astrexpl.wav')
+speed = 8
+bspeed = 12
+sspeed = 14
+powerc = RED
+pew = pygame.mixer.Sound('assets/sounds/pew.wav')
+astrexpl = pygame.mixer.Sound('assets/sounds/astrexpl.wav')
+
 for meteors in meteor_list:
-    meteor_images.append(pygame.image.load(path.join(img_dir, meteors)).convert())
+    meteor_images.append(
+        pygame.image.load(path.join(img_dir, meteors)).convert()
+    )
 
 clock = pygame.time.Clock()
-print(4)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('assets/images/player.png')
         self.rect = self.image.get_rect()
-        self.radius=29
+        self.radius = 29
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
         self.hidden = False
-        self.lives=3
-        self.soniclaser=0
-        self.power=1
+        self.lives = 3
+        self.soniclaser = 0
+        self.power = 1
         self.hide_timer = pygame.time.get_ticks()
 
     def update(self):
@@ -70,7 +80,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.centerx = WIDTH / 2
                 self.rect.bottom = HEIGHT - 10
         self.speedx = 0
-        #speed=8
         keystate = pygame.key.get_pressed()
         if keystate[pygame.K_LEFT]:
             self.speedx = -speed
@@ -84,7 +93,6 @@ class Player(pygame.sprite.Sprite):
 
     def powerup(self):
         self.power += 1
-
 
     def shoot(self):
         if self.power == 1:
@@ -102,7 +110,7 @@ class Player(pygame.sprite.Sprite):
             pew.play()
 
     def sonicshot(self):
-        sonicbull=Sonicshot(self.rect.centerx,self.rect.top)
+        sonicbull = Sonicshot(self.rect.centerx, self.rect.top)
         all_sprites.add(sonicbull)
         sonicshot.add(sonicbull)
 
@@ -110,6 +118,7 @@ class Player(pygame.sprite.Sprite):
         self.hidden = True
         self.hide_timer = pygame.time.get_ticks()
         self.rect.center = (WIDTH / 2, HEIGHT + 200)
+
 
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
@@ -127,10 +136,13 @@ class Mob(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        if self.rect.top > HEIGHT + 10 or self.rect.left < -125 or self.rect.right > WIDTH+ 125:
+        if (self.rect.top > HEIGHT + 10 or
+                self.rect.left < -125 or
+                self.rect.right > WIDTH + 125):
             self.rect.x = random.randrange(WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(1, 8)
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -147,10 +159,11 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
+
 class Sonicshot(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((WIDTH*2,10))
+        self.image = pygame.Surface((WIDTH*2, 10))
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
@@ -160,6 +173,7 @@ class Sonicshot(pygame.sprite.Sprite):
         self.rect.y += self.speedy
         if self.rect.bottom < 0:
             self.kill()
+
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, center, size):
@@ -185,10 +199,11 @@ class Explosion(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
+
 class Pow(pygame.sprite.Sprite):
     def __init__(self, center):
         pygame.sprite.Sprite.__init__(self)
-        self.type = random.choice(['life','gun'])
+        self.type = random.choice(['life', 'gun'])
         self.image = powerup_images[self.type]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
@@ -201,6 +216,8 @@ class Pow(pygame.sprite.Sprite):
             self.kill()
 
 font_name = pygame.font.match_font(' InsaneHours2')
+
+
 def draw_text(surf, text, size, x, y):
     font = pygame.font.Font(font_name, size)
     text_surface = font.render(text, True, RED)
@@ -209,15 +226,17 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-with open(path.join(hdir,HS_FILE),'w+') as f:
+with open(path.join(hdir, HS_FILE), 'w+') as f:
     try:
-        highscore=int(f.read())
+        highscore = int(f.read())
     except:
-        highscore=200
+        highscore = 200
+
 
 def BG():
     screen.fill(WHITE)
-    screen.blit(bg,(0,0))
+    screen.blit(bg, (0, 0))
+
 
 def draw_lives(surf, x, y, lives, img):
     img_rect = img.get_rect()
@@ -225,10 +244,12 @@ def draw_lives(surf, x, y, lives, img):
     img_rect.y = y
     surf.blit(img, img_rect)
 
+
 def newmob():
     m = Mob()
     all_sprites.add(m)
     mobs.add(m)
+
 
 def draw_shield_bar(surf, x, y, pct):
     if pct < 0:
@@ -241,14 +262,17 @@ def draw_shield_bar(surf, x, y, pct):
     pygame.draw.rect(surf, powerc, fill_rect)
     pygame.draw.rect(surf, WHITE, outline_rect, 2)
 
+
 def showscreen():
     BG()
     draw_text(screen, "asteroid invasion", 50, WIDTH / 2, HEIGHT / 4)
-    draw_text(screen, "left and right arrow to move", 20,WIDTH / 2, HEIGHT / 2-12.5)
-    draw_text(screen, "press space to shoot", 20,WIDTH / 2, HEIGHT / 2-50)
-    draw_text(screen, "if red bar turns green ", 20,WIDTH / 2, HEIGHT / 2+22)
-    draw_text(screen, "press arrow up to use sonicshot", 20,WIDTH / 2, HEIGHT / 2+44)
-    draw_text(screen,'highscore: '+str(highscore),18,WIDTH/2,400)
+    draw_text(screen, "left and right arrow to move",
+              20, WIDTH / 2, HEIGHT / 2 - 12.5)
+    draw_text(screen, "press space to shoot", 20, WIDTH / 2, HEIGHT / 2-50)
+    draw_text(screen, "if red bar turns green ", 20, WIDTH / 2, HEIGHT / 2+22)
+    draw_text(screen, "press arrow up to use sonicshot",
+              20, WIDTH / 2, HEIGHT / 2 + 44)
+    draw_text(screen, 'highscore: '+str(highscore), 18, WIDTH/2, 400)
     draw_text(screen, "Press up arrow to start", 18, WIDTH / 2, HEIGHT * 3 / 4)
     pygame.display.flip()
     waiting = True
@@ -284,16 +308,16 @@ game_over = True
 while running:
     if game_over:
         showscreen()
-        game_over=False
-        all_sprites=pygame.sprite.Group()
-        mobs=pygame.sprite.Group()
-        bullets=pygame.sprite.Group()
-        sonicshot=pygame.sprite.Group()
-        powerups=pygame.sprite.Group()
-        player=Player()
+        game_over = False
+        all_sprites = pygame.sprite.Group()
+        mobs = pygame.sprite.Group()
+        bullets = pygame.sprite.Group()
+        sonicshot = pygame.sprite.Group()
+        powerups = pygame.sprite.Group()
+        player = Player()
         all_sprites.add(player)
-        score=0
-        powerc=RED
+        score = 0
+        powerc = RED
         for i in range(9):
             newmob()
 
@@ -305,11 +329,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and player.hidden==False:
+            if event.key == pygame.K_SPACE and not player.hidden:
                 player.shoot()
-            if event.key == pygame.K_UP and player.soniclaser==100:
-                powerc=RED
-                player.soniclaser=0
+            if event.key == pygame.K_UP and player.soniclaser == 100:
+                powerc = RED
+                player.soniclaser = 0
                 player.sonicshot()
     # Update
     all_sprites.update()
@@ -317,61 +341,61 @@ while running:
     # check to see if a bullet hit a mob
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
     for hit in hits:
-        expl = Explosion(hit.rect.center,'lg')
+        expl = Explosion(hit.rect.center, 'lg')
         all_sprites.add(expl)
         newmob()
-        score+=50
-        player.soniclaser+=2
+        score += 50
+        player.soniclaser += 2
         astrexpl.play()
         if random.random() > 0.98:
             pow = Pow(hit.rect.center)
             all_sprites.add(pow)
             powerups.add(pow)
 
-
     hits = pygame.sprite.groupcollide(mobs, sonicshot, True, False)
     for hit in hits:
-        expl = Explosion(hit.rect.center,'lg')
+        expl = Explosion(hit.rect.center, 'lg')
         all_sprites.add(expl)
         newmob()
-        score+=10
+        score += 10
         astrexpl.play()
 
     # check to see if a mob hit the player
-    hits = pygame.sprite.spritecollide(player, mobs, False,pygame.sprite.collide_circle)
-    if hits :
+    hits = pygame.sprite.spritecollide(
+        player, mobs, False, pygame.sprite.collide_circle
+    )
+    if hits:
         death_explosion = Explosion(player.rect.center, 'player')
         astrexpl.play()
         all_sprites.add(death_explosion)
         player.hide()
         player.lives -= 1
-        player.power=1
-        powerc=RED
-        player.soniclaser=0
-    if player.lives==0 and not death_explosion.alive():
+        player.power = 1
+        powerc = RED
+        player.soniclaser = 0
+    if player.lives == 0 and not death_explosion.alive():
         game_over = True
 
     hits = pygame.sprite.spritecollide(player, powerups, True)
     for hit in hits:
-         if hit.type == 'gun':
+        if hit.type == 'gun':
             player.powerup()
-            score+=100
-         if hit.type=='life':
-             player.lives+=1
+            score += 100
+        if hit.type == 'life':
+            player.lives += 1
 
-    if score>highscore:
-        highscore=score
+    if score > highscore:
+        highscore = score
 
-    if player.soniclaser>=100:
-        player.soniclaser=100
-        powerc=GREEN
-
+    if player.soniclaser >= 100:
+        player.soniclaser = 100
+        powerc = GREEN
 
     # Draw / render
     BG()
-    draw_text(screen,str(player.lives)+'x',18,648,10)
+    draw_text(screen, str(player.lives) + 'x', 18, 648, 10)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
-    screen.blit(life,(665,0))
+    screen.blit(life, (665, 0))
     all_sprites.draw(screen)
     draw_shield_bar(screen, 5, 5, player.soniclaser)
     # *after* drawing everything, flip the display
